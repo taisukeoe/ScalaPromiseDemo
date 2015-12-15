@@ -25,12 +25,15 @@ trait ImageLoadable extends Activity {
     p.future
   }
 
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = requestCode match {
-    case IMAGE_FETCH_ID => if (resultCode == Activity.RESULT_OK)
-      promise.foreach(_.complete(Try(data.getData)))
-    else
-      promise.foreach(_.failure(ImageNotAvailableException("Failed to fetch image.")))
-    case _ => //do nothing
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+    super.onActivityResult(requestCode,resultCode,data)
+    requestCode match {
+      case IMAGE_FETCH_ID => if (resultCode == Activity.RESULT_OK)
+        promise.foreach(_.success(data.getData))
+      else
+        promise.foreach(_.failure(ImageNotAvailableException("Failed to fetch image.")))
+      case _ => //do nothing
+    }
   }
 }
 
